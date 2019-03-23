@@ -1,0 +1,64 @@
+/*
+ * CTC_mode.cpp
+ * Author : ALFONSO CONTRERAS
+ * PROFESSOR: VENKATESAN MUTHUKUMAR
+ * THIS PROGRAM CREATES A DUTY CYCLE OF 60% USING TIMER0 ON CTC
+ */ 
+#define F_CPU16000000UL      //DEFINING MY ATMEGA328PB CLK_SPEED
+#include <avr/io.h>          //AVR INPUT/OUTPUT
+#include <avr/interrupt.h>   //AVR INTERRUPT
+#include <util/delay.h>      //AVR DELAY
+#define LED 2
+uint8_t OVFCount=0;          //HOLD VARIABLE FOR COUNTER OVERFLOW
+
+
+int main(void)
+{
+
+
+
+DDRB |= (1<<DDB2);  //PD6 AS OUTPUT
+
+
+TCNT0=0;  //COUNTER T0=0
+
+OCR0A= 128; //TOP TIMER VALUE TO OUTPUT COMPARE REGISTER
+
+TCCR0A |= (1 << WGM21); //SET TO CTC MODE
+
+TIMSK0 |=(1 << OCIE2A); //SET INTERRUPT ON COMPARE MATCH
+
+TCCR0B |= (1<< CS02) | (1<<CS00); //PRESCALAR 1024
+
+sei(); //enable interrupts
+
+while(1)
+{
+
+}
+}
+
+ISR (TIMER0_COMPA_vect)
+{
+while((TIFR0 & 0x02)==0);
+TIFR0=0x02; //CLEAR TIMER0 COMPARE OVERFLOW FLAG
+OVFCount++;
+if(OVFCount<=27)          //STAY_ON_TIME
+{
+	PORTB=(0<<LED);
+	//OVFCount=0;
+}
+else
+PORTB=(1<<LED);
+
+if(OVFCount==45)         //STAY_OFF_TIME
+{
+	//PORTB=(0<<LED);
+	OVFCount=0;
+
+
+
+}
+
+}
+

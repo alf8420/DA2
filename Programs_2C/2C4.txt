@@ -1,0 +1,75 @@
+
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+
+
+int main(void)
+{
+    uint8_t OVFCount= 0;            //COUNTER_OVERFLOW
+	   
+	
+	TCCR0B=(1<<CS02)|(1<<CS00);     //PRESCALAR IS 1024
+
+	/*Set up for PIN C as an input and PORTB 
+	as an output */
+	DDRB |= (1<<2);    //SET PORT B AS OUTPUT
+	PORTB |= (1<<2);    //OUTPUT PORTB2
+	
+	DDRC &= (0<<2);  //SET PINC C AS INPUT
+	PORTC |= (1<<2);     //INPUT C2 
+	
+	
+	 
+	
+	
+	// led is lit up for 1.25s once input pinc is pressed  
+    while (1) 
+    {
+	top:
+	  OVFCount=0;
+	 // TCNT0=0X00; 
+	  
+	  if (!(PINC & (1<<PINC1)))
+	  { 
+		while(1)
+	{
+	while((TIFR0 & 0X01)==0); //OVERFLOW FLAG
+	TCNT0=0X00;
+	TIFR0=0X01;               //CLEAR TIME OVERFLOW FLAG
+	OVFCount++;
+	
+	if(OVFCount<=100)          //STAY_ON_TIME
+	{
+	PORTB=(0<<2);
+	//OVFCount=0;
+	}
+	else{
+	PORTB=(1<<2);
+	goto top;
+	}
+	//if(OVFCount==45)         //STAY_OFF_TIME
+	//{
+	//PORTB=(0<<LED);
+	//OVFCount=0;
+
+	//}
+
+
+	}
+
+		}
+
+		
+	}//end while loop	
+	
+		return 0;
+	}   
+    
+
+
+
+	
+	
+	

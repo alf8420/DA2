@@ -1,0 +1,89 @@
+/*
+ * CTC_mode.cpp
+ * Author : ALFONSO CONTRERAS
+ * PROFESSOR: VENKATESAN MUTHUKUMAR
+ * THIS PROGRAM CREATES A DUTY CYCLE OF 60% USING TIMER0 ON OVF VECTOR
+ */ 
+#define F_CPU16000000UL      //DEFINING MY ATMEGA328PB CLK_SPEED
+#include <avr/io.h>          //AVR INPUT/OUTPUT
+#include <avr/interrupt.h>   //AVR INTERRUPT
+#include <util/delay.h>      //AVR DELAY
+#define LED 2
+uint8_t OVFCount=0;          //HOLD VARIABLE FOR COUNTER OVERFLOW
+
+
+int main(void)
+{
+
+
+
+DDRB |= (1<<DDB2);  //PB2 AS OUTPUT
+
+TIMSK0 |= (1<< TOIE0);
+
+TCNT0=0;  //COUNTER T0=0
+
+//OCR0A= 45; //TOP TIMER VALUE TO OUTPUT COMPARE REGISTER
+
+sei(); //enable interrupts
+
+TCCR0A = 0; //SET TO NORMAL MODE
+
+
+TCCR0B |= (1<< CS02) | (1<<CS00); //PRESCALAR 1024
+
+
+
+while(1)
+{
+
+}
+}
+
+ISR (TIMER0_OVF_vect)
+{
+	// led is lit up for 1.25s once input pinc is pressed  
+    while (1) 
+    {
+	top:
+	  OVFCount=0;
+	 // TCNT0=0X00; 
+	  
+	  if (!(PINC & (1<<PINC1)))
+	  { 
+		while(1)
+	{
+	while((TIFR0 & 0X01)==0); //OVERFLOW FLAG
+	TCNT0=0X00;
+	TIFR0=0X01;               //CLEAR TIME OVERFLOW FLAG
+	OVFCount++;
+	
+	if(OVFCount<=100)          //STAY_ON_TIME 1.250
+	{
+	PORTB=(0<<2);
+	//OVFCount=0;
+	}
+	else{
+	PORTB=(1<<2);
+	goto top;
+	}
+	//if(OVFCount==45)         //STAY_OFF_TIME
+	//{
+	//PORTB=(0<<LED);
+	//OVFCount=0;
+
+	//}
+
+
+	}
+
+		}
+
+		
+	}//end while loop
+}
+
+
+
+
+

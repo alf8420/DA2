@@ -1,0 +1,54 @@
+/*
+ * Author : ALFONSO CONTRERAS
+ * PROFESSOR: VENKATESAN MUTHUKUMAR
+ * THIS PROGRAM CREATES A DUTY CYCLE OF 60% USING TIMER0
+ * IN NORMAL MODE.
+*/
+
+#define F_CPU 16000000UL
+#include <avr/io.h>
+#include <util/delay.h>
+#define LED 2
+
+
+int main()
+{
+uint8_t OVFCount= 0;
+//uint8_t OVFCount2=0;
+
+	DDRB|= 1<< LED;            //CONFIGURE PORTB2
+	TCNT0=0X00;     
+	
+	//PRESCALAR IS 1024
+	TCCR0B=(1<<CS02)|(1<<CS00); 
+
+	while(1)
+	{
+	while((TIFR0 & 0X01)==0); //OVERFLOW FLAG
+	TCNT0=0X00;
+	TIFR0=0X01;               //CLEAR TIME OVERFLOW FLAG
+	OVFCount++;
+	
+	if(OVFCount<=27)          //STAY_ON_TIME
+	{
+	PORTB=(0<<LED);
+	//OVFCount=0;
+	}
+	else
+	PORTB=(1<<LED);
+	
+	if(OVFCount==45)         //STAY_OFF_TIME
+	{
+	//PORTB=(0<<LED);
+	OVFCount=0;
+
+	}
+
+
+	}
+	
+	return 0;
+	}
+
+
+
